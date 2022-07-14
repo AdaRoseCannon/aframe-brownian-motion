@@ -21,10 +21,10 @@ const schema = {
 
 documentation:
 (function () {
-	schema.object.seed = `Random seed `;
-	schema.object.octaves = `How fine grained the motion is`;
-	schema.object.positionVariance = `How much it should be moved by`;
-	schema.object.rotationVariance = `How much it should rotate by`;
+	schema.seed.description = `Random seed `;
+	schema.octaves.description = `How fine grained the motion is`;
+	schema.positionVariance.description = `How much it should be moved by`;
+	schema.rotationVariance.description = `How much it should rotate by`;
 }());
 
 const v2 = new THREE.Vector2();

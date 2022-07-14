@@ -1,19 +1,27 @@
 # AFrame-brownian-motion
 
+This is based on:
+* https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/BrownianMotion.cs
+* https://github.com/josephg/noisejs
+
 [Demo](https://ada.is/aframe-brownian-motion)
+
+```html
+<a-cylinder shadow position="0 1 -2" radius="0.2" height="0.4" brownian-motion></a-cylinder>
+<a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-torus-knot>
+<a-box shadow position="-0.5 1 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-box>
+```
 
 <!--DOCS-->
 ### brownian-motion component
 
-This component uses instancing to cover one object in another.
+This component animates an object
 
-| Property        | Type     | Description                                                                                                                                                                                                                                                                                                                               | Default |
-| :-------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
-| object          | selector | Object to place on the surface of this object                                                                                                                                                                                                                                                                                             |         |
-| count           | number   | Amount of objects                                                                                                                                                                                                                                                                                                                         | 128     |
-| weightAttribute | string   | Specifies a vertex attribute to be used as a weight when sampling from the surface. Faces with higher weights are more likely to be sampled, and those with weights of zero will not be sampled at all. For vector attributes, only .x is used in sampling. If no weight attribute is selected, sampling is randomly distributed by area. | ""      |
-| scale           | vec3     | Amount to scale the objects by                                                                                                                                                                                                                                                                                                            | {}      |
-| scaleJitter     | vec3     | Add randomness to the scaling                                                                                                                                                                                                                                                                                                             | {}      |
-| uniformJitter   | boolean  | Scale x,y,z together (true) or each independently (false)                                                                                                                                                                                                                                                                                 | true    |
+| Property         | Type   | Description                    | Default |
+| :--------------- | :----- | :----------------------------- | :------ |
+| seed             | number | Random seed                    | 0       |
+| octaves          | number | How fine grained the motion is | 2       |
+| positionVariance | number | How much it should be moved by | 1       |
+| rotationVariance | number | How much it should rotate by   | 10      |
 
 <!--DOCS_END-->
