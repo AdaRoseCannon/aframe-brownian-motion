@@ -1,6 +1,6 @@
 {
   "name": "aframe-brownian-motion",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "THREE brownian-motion in AFrame",
   "repository": "https://github.com/AdaRoseCannon/aframe-brownian-motion",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "rollup -c && find build -maxdepth 2 -iname \"*.js\" -not -type d -exec du -h {} \\;;npm run docs",
     "develop": "rollup -w -c"
   },
-  "type":"module",
+  "type": "module",
   "author": "AdaRoseCannon",
   "license": "MIT",
   "devDependencies": {
