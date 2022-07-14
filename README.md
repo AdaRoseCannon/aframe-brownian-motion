@@ -9,6 +9,10 @@ This is based on:
 
 
 ```html
+<!-- in head -->
+<script src="https://cdn.jsdelivr.net/npm/aframe-brownian-motion@1.0.0/build/aframe-brownian-motion.min.js"></script>
+
+<!-- in a-scene -->
 <a-cylinder shadow position="0 1 -2" radius="0.2" height="0.4" brownian-motion></a-cylinder>
 <a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-torus-knot>
 <a-box shadow position="-0.5 1 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-box>
