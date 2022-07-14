@@ -4,10 +4,7 @@ This is based on:
 * https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/BrownianMotion.cs
 * https://github.com/josephg/noisejs
 
-## [Demo](https://ada.is/aframe-brownian-motion)
-[![Screen Recording of some 3D objects moving in a random pattern](https://user-images.githubusercontent.com/4225330/179013110-9c2c8154-266f-46ce-bb0c-b0c172d09cfc.gif)
-](https://ada.is/aframe-brownian-motion)
-
+### Quick Start
 
 ```html
 <!-- in head -->
@@ -18,6 +15,10 @@ This is based on:
 <a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-torus-knot>
 <a-box shadow position="-0.5 1 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-box>
 ```
+
+### [Demo](https://ada.is/aframe-brownian-motion)
+[![Screen Recording of some 3D objects moving in a random pattern](https://user-images.githubusercontent.com/4225330/179013110-9c2c8154-266f-46ce-bb0c-b0c172d09cfc.gif)
+](https://ada.is/aframe-brownian-motion)
 
 <!--DOCS-->
 ### brownian-motion component
