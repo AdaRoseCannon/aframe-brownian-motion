@@ -7,6 +7,10 @@ This is based on:
 ### Quick Start
 
 ```html
+<!-- in head -->
+<script src="https://cdn.jsdelivr.net/npm/aframe-brownian-motion@1.1.0/build/aframe-brownian-motion.min.js"></script>
+
+<!-- in a-scene -->
 <a-cylinder shadow position="0 1 -2" radius="0.2" height="0.4" brownian-motion="speed:0.2;"></a-cylinder>
 <a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="speed:0.5;positionVariance:2 2 2;rotationVariance:5 5 5;"></a-torus-knot>
 <a-box shadow position="-0.5 0.2 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="speed:0.9;positionVariance:2 0 2;rotationVariance:5 5 5;"></a-box>
