@@ -27,9 +27,9 @@
 		<a-camera wasd-controls="acceleration:10;"></a-camera>
 
 		<a-entity id="objects">
-			<a-cylinder shadow position="0 1 -2" radius="0.2" height="0.4" brownian-motion></a-cylinder>
-			<a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-torus-knot>
-			<a-box shadow position="-0.5 1 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="positionVariance:2;rotationVariance:5;"></a-box>
+			<a-cylinder shadow position="0 1 -2" radius="0.2" height="0.4" brownian-motion="speed:0.2;"></a-cylinder>
+			<a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="speed:0.5;positionVariance:2;rotationVariance:5;"></a-torus-knot>
+			<a-box shadow position="-0.5 1 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="speed:0.9;positionVariance:2;rotationVariance:5;"></a-box>
 		</a-entity>
 	</a-scene>
 	<img src="demo_assets/240px-GitHub_forkme_ribbon_right_green.svg.png"

@@ -130,6 +130,9 @@
 		},
 		rotationVariance: {
 			default: 10
+		},
+		speed: {
+			default: 1
 		}
 	};
 
@@ -174,15 +177,15 @@
 			const object3D = this.el.object3D;
 
 			np.set(
-				this.fbm(this.positionOffset.x, time/1000, this.data.octaves),
-				this.fbm(this.positionOffset.y, time/1000, this.data.octaves),
-				this.fbm(this.positionOffset.z, time/1000, this.data.octaves)
+				this.fbm(this.positionOffset.x, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.positionOffset.y, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.positionOffset.z, this.data.speed * time/1000, this.data.octaves)
 			);
 
 			nr.set(
-				this.fbm(this.rotationOffset.x, time/1000, this.data.octaves),
-				this.fbm(this.rotationOffset.y, time/1000, this.data.octaves),
-				this.fbm(this.rotationOffset.z, time/1000, this.data.octaves)
+				this.fbm(this.rotationOffset.x, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.y, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.z, this.data.speed * time/1000, this.data.octaves)
 			);
 
 			np.multiplyScalar(this.data.positionVariance / 0.75);

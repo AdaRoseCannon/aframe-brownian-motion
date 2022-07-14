@@ -16,6 +16,9 @@ const schema = {
 	},
 	rotationVariance: {
 		default: 10
+	},
+	speed: {
+		default: 1
 	}
 };
 
@@ -25,6 +28,7 @@ documentation:
 	schema.octaves.description = `How fine grained the motion is`;
 	schema.positionVariance.description = `How much it should be moved by`;
 	schema.rotationVariance.description = `How much it should rotate by`;
+	schema.speed.description = `Speed multiplier`;
 }());
 
 const v2 = new THREE.Vector2();
@@ -68,15 +72,15 @@ AFRAME.registerComponent('brownian-motion', {
 		const object3D = this.el.object3D;
 
 		np.set(
-			this.fbm(this.positionOffset.x, time/1000, this.data.octaves),
-			this.fbm(this.positionOffset.y, time/1000, this.data.octaves),
-			this.fbm(this.positionOffset.z, time/1000, this.data.octaves)
+			this.fbm(this.positionOffset.x, this.data.speed * time/1000, this.data.octaves),
+			this.fbm(this.positionOffset.y, this.data.speed * time/1000, this.data.octaves),
+			this.fbm(this.positionOffset.z, this.data.speed * time/1000, this.data.octaves)
 		);
 
 		nr.set(
-			this.fbm(this.rotationOffset.x, time/1000, this.data.octaves),
-			this.fbm(this.rotationOffset.y, time/1000, this.data.octaves),
-			this.fbm(this.rotationOffset.z, time/1000, this.data.octaves)
+			this.fbm(this.rotationOffset.x, this.data.speed * time/1000, this.data.octaves),
+			this.fbm(this.rotationOffset.y, this.data.speed * time/1000, this.data.octaves),
+			this.fbm(this.rotationOffset.z, this.data.speed * time/1000, this.data.octaves)
 		);
 
 		np.multiplyScalar(this.data.positionVariance / 0.75);

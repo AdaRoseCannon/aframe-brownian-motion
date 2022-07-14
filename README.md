@@ -15,7 +15,7 @@ This is based on:
 ```
 
 <!--DOCS-->
-## brownian-motion component
+### brownian-motion component
 
 This component animates an object
 
@@ -25,5 +25,6 @@ This component animates an object
 | octaves          | number | How fine grained the motion is | 2       |
 | positionVariance | number | How much it should be moved by | 1       |
 | rotationVariance | number | How much it should rotate by   | 10      |
+| speed            | number | Speed multiplier               | 1       |
 
 <!--DOCS_END-->
