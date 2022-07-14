@@ -4,8 +4,7 @@ This is based on:
 * https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/BrownianMotion.cs
 * https://github.com/josephg/noisejs
 
-## 
-[Demo](https://ada.is/aframe-brownian-motion)
+## [Demo](https://ada.is/aframe-brownian-motion)
 [![image](https://user-images.githubusercontent.com/4225330/178984929-f0d90485-613e-4d87-835c-912cff9aad1e.png)](https://ada.is/aframe-brownian-motion)
 
 
