@@ -12,10 +12,12 @@ const schema = {
 		default: 2
 	},
 	positionVariance: {
-		default: 1
+		type: 'vec3',
+		default: {x: 1, y: 1, z: 1}
 	},
 	rotationVariance: {
-		default: 10
+		type: 'vec3',
+		default: {x: 10, y: 10, z: 10}
 	},
 	speed: {
 		default: 1
@@ -83,8 +85,8 @@ AFRAME.registerComponent('brownian-motion', {
 			this.fbm(this.rotationOffset.z, this.data.speed * time/1000, this.data.octaves)
 		);
 
-		np.multiplyScalar(this.data.positionVariance / 0.75);
-		nr.multiplyScalar(this.data.rotationVariance / 0.75);
+		np.multiply(this.data.positionVariance).multiplyScalar(1 / 0.75);
+		nr.multiply(this.data.rotationVariance).multiplyScalar(1 / 0.75);
 
 		// transform.localPosition = _initialPosition + np;
 		object3D.position.copy(this.initialPosition).add(np);

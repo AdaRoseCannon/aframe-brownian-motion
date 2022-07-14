@@ -1,14 +1,14 @@
 <html>
 
 <head>
-	<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@744e2b869e281f840cff7d9cb02e95750ce90920/dist/aframe-master.min.js"></script>
 	<script
 		src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
 	<script src="./build/aframe-brownian-motion.js"></script>
 
 	<meta name="title" content="aframe-brownian-motion example">
 	<meta name="og:title" content="aframe-brownian-motion example">
-	<meta name="description" content="This component uses instancing to cover one object in another.">
+	<meta name="description" content="This moves objects in a random like fashion">
 	<meta name="keywords" content="AFrame">
 	<meta name="robots" content="index, follow">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -19,17 +19,23 @@
 </head>
 
 <body>
-	<a-scene reflection="directionalLight:#dirlight;"
-		renderer="alpha:true;physicallyCorrectLights:true;colorManagement:true;exposure:1;toneMapping:ACESFilmic;">
-		<a-entity hide-on-enter-ar position="0 -0.2 0" environment="shadow:true;lighting:none;skyType:atmosphere;"></a-entity>
+	<a-scene
+		ar-hit-test="target:#objects;"
+		reflection="directionalLight:#dirlight;"
+		renderer="alpha:true;physicallyCorrectLights:true;colorManagement:true;exposure:1;toneMapping:ACESFilmic;"
+	>
+		<a-entity hide-on-enter-ar position="0 -0.002 0" environment="shadow:true;lighting:none;skyType:atmosphere;"></a-entity>
 		<!-- directional light it points from it's position towards the origin, it casts a shadow on the #objects -->
-		<a-light type="directional" light="castShadow:true;" position="1 4 1" intensity="0.5" shadow-camera-automatic="#objects"></a-light>
-		<a-camera wasd-controls="acceleration:10;"></a-camera>
+		<a-light type="directional" light="castShadow:true;" position="1 4 1" intensity="0.5" shadow-camera-automatic="#shadow-catcher"></a-light>
+		<a-light type="ambient" intensity="0.5"></a-light>
+		<a-camera position="0 0.5 0" wasd-controls="acceleration:10;"></a-camera>
 
-		<a-entity id="objects">
-			<a-cylinder shadow position="0 1 -2" radius="0.2" height="0.4" brownian-motion="speed:0.2;"></a-cylinder>
-			<a-torus-knot shadow position="0 1 -2" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="speed:0.5;positionVariance:2;rotationVariance:5;"></a-torus-knot>
-			<a-box shadow position="-0.5 1 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="speed:0.9;positionVariance:2;rotationVariance:5;"></a-box>
+		<a-entity id="objects" position="0 0 -1" scale="0.5 0.5 0.5">
+			<a-cylinder shadow position="0 1 0" radius="0.2" height="0.4" brownian-motion="speed:0.2;"></a-cylinder>
+			<a-torus-knot shadow position="0 1 0" radius-tubular="0.03" radius="0.15" height="0.4" brownian-motion="speed:0.5;rotationVariance:5 5 5;"></a-torus-knot>
+			<a-box shadow position="0 0.24 0" width="0.4" depth="0.4" height="0.4" brownian-motion="speed:0.9;positionVariance:2 0 2;rotationVariance:5 5 5;"></a-box>
+		
+			<a-plane id="shadow-catcher" material="shader:shadow" shadow="cast:false;" rotation="-90 0 0" width="2" height="2"></a-plane>
 		</a-entity>
 	</a-scene>
 	<img src="demo_assets/240px-GitHub_forkme_ribbon_right_green.svg.png"
