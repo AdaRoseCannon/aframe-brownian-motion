@@ -21,7 +21,7 @@ Include the script in the head of your page
 <a-box shadow position="-0.5 0.2 -2" width="0.4" depth="0.4" height="0.4" brownian-motion="speed:0.9;positionVariance:2 0 2;rotationVariance:5 5 5;"></a-box>
 ```
 
-### Flocking Behaviour
+### [Flocking Behaviour (demo)](https://ada.is/aframe-brownian-motion/flocking.html)
 
 The space vector component can be used have objects follow similar but divergent over time paths.
 
