@@ -55,7 +55,7 @@
 
 	// This isn't a very good seeding function, but it works ok. It supports 2^16
 	// different seed values. Write something better if you need more seeds.
-	function seed$1 (seed) {
+	function seed (seed) {
 		if (seed > 0 && seed < 1) {
 			// Scale the seed out
 			seed *= 65536;
@@ -79,7 +79,7 @@
 		}
 	}
 
-	seed$1(0);
+	seed(0);
 
 	// ##### Perlin noise stuff
 
@@ -127,11 +127,11 @@
 		},
 		positionVariance: {
 			type: 'vec3',
-			default: {x: 1, y: 1, z: 1}
+			default: new THREE.Vector3(1,1,1)
 		},
 		rotationVariance: {
 			type: 'vec3',
-			default: {x: 10, y: 10, z: 10}
+			default: new THREE.Vector3(10,10,10)
 		},
 		speed: {
 			default: 1
@@ -143,8 +143,11 @@
 	const nr = new THREE.Vector3();
 	const nre = new THREE.Euler(0,0,0,'ZXY');
 	const nrq = new THREE.Quaternion();
+	const emptyOffset = [0,0,0,0,0,0];
+	const _scale = new THREE.Vector3(1,1,1);
+	const _matrix = new THREE.Matrix4();
 
-	AFRAME.registerComponent('brownian-motion', {
+	const brownianMotion = {
 		schema,
 		description: `This component animates an object`,
 		init() {
@@ -175,26 +178,27 @@
 			}
 			return f;
 		},
-		tick(time) {
-
-			if (!this.startTime) this.startTime = time;
-
-			const object3D = this.el.object3D;
-
+		updateNPNR(time, extraOffset, extraOffsetMultiplier) {
 			np.set(
-				this.fbm(this.positionOffset.x, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
-				this.fbm(this.positionOffset.y, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
-				this.fbm(this.positionOffset.z, this.data.speed * (time - this.startTime)/1000, this.data.octaves)
+				this.fbm(this.positionOffset.x + extraOffset[0] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.positionOffset.y + extraOffset[1] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.positionOffset.z + extraOffset[2] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves)
 			);
 
 			nr.set(
-				this.fbm(this.rotationOffset.x, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
-				this.fbm(this.rotationOffset.y, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
-				this.fbm(this.rotationOffset.z, this.data.speed * (time - this.startTime)/1000, this.data.octaves)
+				this.fbm(this.rotationOffset.x + extraOffset[3] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.y + extraOffset[4] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.z + extraOffset[5] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves)
 			);
 
 			np.multiply(this.data.positionVariance).multiplyScalar(1 / 0.75);
 			nr.multiply(this.data.rotationVariance).multiplyScalar(1 / 0.75);
+		},
+		tick(time) {
+			if (!this.startTime) this.startTime = time;
+			const object3D = this.el.object3D;
+
+			this.updateNPNR(time-this.startTime, emptyOffset, 0);
 
 			// transform.localPosition = _initialPosition + np;
 			object3D.position.copy(this.initialPosition).add(np);
@@ -203,10 +207,126 @@
 			nre.setFromVector3(nr);
 			nrq.setFromEuler(nre);
 			object3D.quaternion.copy(this.initialQuaternion).multiply(nrq);
-		},
-		remove() {
 		}
-	});
+	};
+
+	const brownianPath = {};
+	Object.assign(brownianPath, brownianMotion);
+	brownianPath.schema = Object.assign({
+		object: {
+			type: 'selector',
+			description: `Which object to instance with brownian-motion`
+		},
+		showLine: {
+			default: false,
+			description: `Whether to draw lines`
+		},
+		lineColor1: {
+			type: 'color',
+			default: 'orange',
+			description: `Color of the first line`
+		},
+		lineColor2: {
+			type: 'color',
+			default: 'hotpink',
+			description: `Color of the last line`
+		},
+		lineStart: {
+			default: 0,
+			description: `Time stamp to start drawing the lines at`
+		},
+		lineStep: {
+			default: 20,
+			description: `Steps to take in drawing the path`
+		},
+		lineEnd: {
+			default: 10000,
+			description: `Time stamp to stop drawing the lines at`
+		},
+		spaceVectorOffset: {
+			type: 'array',
+			description: `Space vector offset for each instance/line`
+		},
+		count: {
+			default: 10,
+			description: `Number of lines or instances`
+		}
+	}, brownianMotion.schema);
+
+	brownianPath.update = function tick() {
+		const data = this.data;
+		brownianMotion.update.call(this);
+		this.spaceVectorOffset = [];
+		for (let i=0;i<6;i++) {
+			this.spaceVectorOffset[i] = data.spaceVectorOffset[i] ? Number(data.spaceVectorOffset[i]) : 0;
+		}
+
+		// Redraw the lines
+		if (this.el.getObject3D('brownianPathLines')) {
+			this.el.removeObject3D('brownianPathLines');
+		}
+		if (data.showLine) {
+			const c1 = new THREE.Color(data.lineColor1);
+			const c2 = new THREE.Color(data.lineColor2);
+			const lineGroup = new THREE.Group();
+			this.el.setObject3D('brownianPathLines', lineGroup);
+			const points = [];
+			for (let i=0;i<data.count;i++) {
+				points[i] = [];
+			}
+			for (let t=data.lineStart;t<data.lineEnd;t+=data.lineStep) {
+				for (let i=0;i<data.count;i++) {
+					this.updateNPNR(t, this.spaceVectorOffset, i);
+					points[i].push( np.clone() );
+				}
+			}
+			for (let i=0;i<data.count;i++) {
+				const material = new THREE.LineBasicMaterial( { color: c1.lerpHSL(c2, i/(this.data.count - 1)) } );
+				const geometry = new THREE.BufferGeometry().setFromPoints( points[i] );
+				const line = new THREE.Line( geometry, material );
+				lineGroup.add(line);
+			}
+		}
+
+		if (data.object) {
+			this.instances = this.instances || [];
+			const instances = this.instances;
+			const instanceGroup = new THREE.Group();
+			if (this.el.getObject3D('instances')) {
+				this.el.removeObject3D('instances');
+			}
+			instances.splice(0);
+			if (data.object) {
+				data.object.object3D.traverse(function (object) {
+					if (object.geometry && object.material) {
+						const instance = new THREE.InstancedMesh(object.geometry, object.material, data.count);
+						instance.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+						instances.push(instance);
+						instanceGroup.add(instance);
+					}
+				});
+			}
+			this.el.setObject3D('instances', instanceGroup);
+		}
+	};
+	brownianPath.tick = function tick(time) {
+		if (!this.startTime) this.startTime = time;
+		for (let i=0;i<this.data.count;i++) {
+			this.updateNPNR(time-this.startTime, this.spaceVectorOffset, i);
+			nre.setFromVector3(nr);
+			nrq.setFromEuler(nre);
+			_matrix.compose(np, nrq, _scale);
+			for (const ins of this.instances) {
+				ins.setMatrixAt( i, _matrix );
+			}
+		}
+		for (const ins of this.instances) {
+			ins.instanceMatrix.needsUpdate = true;
+		}
+	};
+
+	AFRAME.registerComponent('brownian-motion', brownianMotion);
+	AFRAME.registerComponent('brownian-path', brownianPath);
 
 })();
 //# sourceMappingURL=aframe-brownian-motion.js.map

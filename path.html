@@ -29,12 +29,11 @@
 		<a-light type="directional" light="castShadow:true;" position="1 4 1" intensity="0.5" shadow-camera-automatic="#shadow-catcher"></a-light>
 		<a-light type="ambient" intensity="0.5"></a-light>
 		<a-camera position="0 0.5 0" wasd-controls="acceleration:10;"></a-camera>
-
+		
+		<a-torus-knot shadow radius-tubular="0.002" id="thing-to-clone" visible="false" radius="0.1"></a-torus-knot>
+		
 		<a-entity id="objects" position="0 0 -1" scale="0.5 0.5 0.5">
-			<a-cylinder   brownian-motion="positionVariance:2 2 2;spaceVector:100.1,200.1,300.1,150.1,250.1,350.1;speed:0.5;" shadow scale="0.4 0.4 0.4" position="0 0.5 0" radius="0.2" height="0.4" ></a-cylinder>
-			<a-torus-knot brownian-motion="positionVariance:2 2 2;spaceVector:100.2,200.2,300.2,150.2,250.2,350.2;speed:0.5;" shadow scale="0.4 0.4 0.4" position="0 0.5 0" radius-tubular="0.03" radius="0.15" height="0.4" ></a-torus-knot>
-			<a-box        brownian-motion="positionVariance:2 2 2;spaceVector:100.3,200.3,300.3,150.3,250.3,350.3;speed:0.5;" shadow scale="0.4 0.4 0.4" position="0 0.5 0" width="0.4" depth="0.4" height="0.4" ></a-box>
-
+			<a-entity position="0 1 0" brownian-path="count:40;object:#thing-to-clone;positionVariance:2 2 2;showLine:true;spaceVectorOffset:0.02,0.02,0.02,0.02,0.02,0.02;" shadow></a-entity>
 			<a-plane id="shadow-catcher" material="shader:shadow" shadow="cast:false;" rotation="-90 0 0" width="2" height="2"></a-plane>
 		</a-entity>
 	</a-scene>
