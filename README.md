@@ -4,6 +4,11 @@ This is based on:
 * https://github.com/keijiro/ProceduralMotion/blob/master/Packages/jp.keijiro.klak.motion/Runtime/BrownianMotion.cs
 * https://github.com/josephg/noisejs
 
+
+## [Demo](https://ada.is/aframe-brownian-motion)
+[![Screen Recording of some 3D objects moving in a random pattern](https://user-images.githubusercontent.com/4225330/179013110-9c2c8154-266f-46ce-bb0c-b0c172d09cfc.gif)
+](https://ada.is/aframe-brownian-motion)
+
 ## Quick Start
 
 Include the script in the head of your page
@@ -55,10 +60,6 @@ Example, this will draw 40 lines and clone the object 40 times to travel along t
 
 <a-entity position="0 1 0" brownian-path="count:40;object:#thing-to-clone;positionVariance:2 2 2;showLine:true;spaceVectorOffset:0.02,0.02,0.02,0.02,0.02,0.02;" shadow></a-entity>
 ```
-
-## [Demo](https://ada.is/aframe-brownian-motion)
-[![Screen Recording of some 3D objects moving in a random pattern](https://user-images.githubusercontent.com/4225330/179013110-9c2c8154-266f-46ce-bb0c-b0c172d09cfc.gif)
-](https://ada.is/aframe-brownian-motion)
 
 ## Docs
 
