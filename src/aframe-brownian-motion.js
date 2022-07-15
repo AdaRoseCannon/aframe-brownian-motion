@@ -2,11 +2,11 @@
 /* For dealing with covering one object in another curves */
 /* global THREE, AFRAME */
 
-import {perlin2, seed} from './noise.js';
+import {perlin2} from './noise.js';
 
 const schema = {
-	seed: {
-		default: 0
+	spaceVector: {
+		type: 'array'
 	},
 	octaves: {
 		default: 2
@@ -26,7 +26,7 @@ const schema = {
 
 documentation:
 (function () {
-	schema.seed.description = `Random seed `;
+	schema.spaceVector.description = `Where in the phase space the starts, this should be an array of 6 values where empty spaces become a random number between -1000 and 1000`;
 	schema.octaves.description = `How fine grained the motion is`;
 	schema.positionVariance.description = `How much it should be moved by`;
 	schema.rotationVariance.description = `How much it should rotate by`;
@@ -38,25 +38,26 @@ const np = new THREE.Vector3();
 const nr = new THREE.Vector3();
 const nre = new THREE.Euler(0,0,0,'ZXY');
 const nrq = new THREE.Quaternion();
+
 AFRAME.registerComponent('brownian-motion', {
 	schema,
 	description: `This component animates an object`,
 	init() {
 		this.initialPosition = new THREE.Vector3().copy(this.el.object3D.position);
 		this.initialQuaternion = new THREE.Quaternion().copy(this.el.object3D.quaternion);
-		this.positionOffset = new THREE.Vector3(
-			Math.random()*2000 - 1000,
-			Math.random()*2000 - 1000,
-			Math.random()*2000 - 1000,
-		);
-		this.rotationOffset = new THREE.Vector3(
-			Math.random()*2000 - 1000,
-			Math.random()*2000 - 1000,
-			Math.random()*2000 - 1000,
-		);
+		this.positionOffset = new THREE.Vector3();
+		this.rotationOffset = new THREE.Vector3();
 	},
 	update() {
-		seed(this.data.seed);
+		this.positionOffset.x = (this.data.spaceVector[0] === '' || this.data.spaceVector[0] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[0]);
+		this.positionOffset.y = (this.data.spaceVector[1] === '' || this.data.spaceVector[1] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[1]);
+		this.positionOffset.z = (this.data.spaceVector[2] === '' || this.data.spaceVector[2] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[2]);
+		this.rotationOffset.x = (this.data.spaceVector[3] === '' || this.data.spaceVector[3] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[3]);
+		this.rotationOffset.y = (this.data.spaceVector[4] === '' || this.data.spaceVector[4] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[4]);
+		this.rotationOffset.z = (this.data.spaceVector[5] === '' || this.data.spaceVector[5] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[5]);
+	},
+	seed(number) {
+		seed(number);
 	},
 	fbm(x, y, octave) {
 		let p = v2.set(x,y);
@@ -71,18 +72,20 @@ AFRAME.registerComponent('brownian-motion', {
 	},
 	tick(time) {
 
+		if (!this.startTime) this.startTime = time;
+
 		const object3D = this.el.object3D;
 
 		np.set(
-			this.fbm(this.positionOffset.x, this.data.speed * time/1000, this.data.octaves),
-			this.fbm(this.positionOffset.y, this.data.speed * time/1000, this.data.octaves),
-			this.fbm(this.positionOffset.z, this.data.speed * time/1000, this.data.octaves)
+			this.fbm(this.positionOffset.x, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+			this.fbm(this.positionOffset.y, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+			this.fbm(this.positionOffset.z, this.data.speed * (time - this.startTime)/1000, this.data.octaves)
 		);
 
 		nr.set(
-			this.fbm(this.rotationOffset.x, this.data.speed * time/1000, this.data.octaves),
-			this.fbm(this.rotationOffset.y, this.data.speed * time/1000, this.data.octaves),
-			this.fbm(this.rotationOffset.z, this.data.speed * time/1000, this.data.octaves)
+			this.fbm(this.rotationOffset.x, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+			this.fbm(this.rotationOffset.y, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+			this.fbm(this.rotationOffset.z, this.data.speed * (time - this.startTime)/1000, this.data.octaves)
 		);
 
 		np.multiply(this.data.positionVariance).multiplyScalar(1 / 0.75);

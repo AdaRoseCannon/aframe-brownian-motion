@@ -55,7 +55,7 @@
 
 	// This isn't a very good seeding function, but it works ok. It supports 2^16
 	// different seed values. Write something better if you need more seeds.
-	function seed (seed) {
+	function seed$1 (seed) {
 		if (seed > 0 && seed < 1) {
 			// Scale the seed out
 			seed *= 65536;
@@ -79,7 +79,7 @@
 		}
 	}
 
-	seed(0);
+	seed$1(0);
 
 	// ##### Perlin noise stuff
 
@@ -119,8 +119,8 @@
 	/* jshint esversion: 9, -W028 */
 
 	const schema = {
-		seed: {
-			default: 0
+		spaceVector: {
+			type: 'array'
 		},
 		octaves: {
 			default: 2
@@ -143,25 +143,26 @@
 	const nr = new THREE.Vector3();
 	const nre = new THREE.Euler(0,0,0,'ZXY');
 	const nrq = new THREE.Quaternion();
+
 	AFRAME.registerComponent('brownian-motion', {
 		schema,
 		description: `This component animates an object`,
 		init() {
 			this.initialPosition = new THREE.Vector3().copy(this.el.object3D.position);
 			this.initialQuaternion = new THREE.Quaternion().copy(this.el.object3D.quaternion);
-			this.positionOffset = new THREE.Vector3(
-				Math.random()*2000 - 1000,
-				Math.random()*2000 - 1000,
-				Math.random()*2000 - 1000,
-			);
-			this.rotationOffset = new THREE.Vector3(
-				Math.random()*2000 - 1000,
-				Math.random()*2000 - 1000,
-				Math.random()*2000 - 1000,
-			);
+			this.positionOffset = new THREE.Vector3();
+			this.rotationOffset = new THREE.Vector3();
 		},
 		update() {
-			seed(this.data.seed);
+			this.positionOffset.x = (this.data.spaceVector[0] === '' || this.data.spaceVector[0] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[0]);
+			this.positionOffset.y = (this.data.spaceVector[1] === '' || this.data.spaceVector[1] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[1]);
+			this.positionOffset.z = (this.data.spaceVector[2] === '' || this.data.spaceVector[2] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[2]);
+			this.rotationOffset.x = (this.data.spaceVector[3] === '' || this.data.spaceVector[3] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[3]);
+			this.rotationOffset.y = (this.data.spaceVector[4] === '' || this.data.spaceVector[4] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[4]);
+			this.rotationOffset.z = (this.data.spaceVector[5] === '' || this.data.spaceVector[5] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[5]);
+		},
+		seed(number) {
+			seed(number);
 		},
 		fbm(x, y, octave) {
 			let p = v2.set(x,y);
@@ -176,18 +177,20 @@
 		},
 		tick(time) {
 
+			if (!this.startTime) this.startTime = time;
+
 			const object3D = this.el.object3D;
 
 			np.set(
-				this.fbm(this.positionOffset.x, this.data.speed * time/1000, this.data.octaves),
-				this.fbm(this.positionOffset.y, this.data.speed * time/1000, this.data.octaves),
-				this.fbm(this.positionOffset.z, this.data.speed * time/1000, this.data.octaves)
+				this.fbm(this.positionOffset.x, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+				this.fbm(this.positionOffset.y, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+				this.fbm(this.positionOffset.z, this.data.speed * (time - this.startTime)/1000, this.data.octaves)
 			);
 
 			nr.set(
-				this.fbm(this.rotationOffset.x, this.data.speed * time/1000, this.data.octaves),
-				this.fbm(this.rotationOffset.y, this.data.speed * time/1000, this.data.octaves),
-				this.fbm(this.rotationOffset.z, this.data.speed * time/1000, this.data.octaves)
+				this.fbm(this.rotationOffset.x, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.y, this.data.speed * (time - this.startTime)/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.z, this.data.speed * (time - this.startTime)/1000, this.data.octaves)
 			);
 
 			np.multiply(this.data.positionVariance).multiplyScalar(1 / 0.75);
