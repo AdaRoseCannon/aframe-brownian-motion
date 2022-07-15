@@ -10,7 +10,7 @@ Include the script in the head of your page
 
 ```html
 <!-- in head -->
-<script src="https://cdn.jsdelivr.net/npm/aframe-brownian-motion@1.1.0/build/aframe-brownian-motion.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aframe-brownian-motion@2.0.1/build/aframe-brownian-motion.min.js"></script>
 ```
 ### [Basic](https://ada.is/aframe-brownian-motion/)
 
