@@ -24,13 +24,16 @@
 		reflection="directionalLight:#dirlight;"
 		renderer="alpha:true;physicallyCorrectLights:true;colorManagement:true;exposure:1;toneMapping:ACESFilmic;"
 	>
+		<a-asset-items>
+			<a-asset-item src="https://cdn.glitch.global/4b432139-bff9-433c-be67-b0efeb34fe1a/pointer.glb?v=1658234783248" id="hand"></a-asset-item>
+		</a-asset-items>
 		<a-entity hide-on-enter-ar position="0 -0.002 0" environment="shadow:true;lighting:none;skyType:atmosphere;"></a-entity>
 		<!-- directional light it points from it's position towards the origin, it casts a shadow on the #objects -->
 		<a-light type="directional" light="castShadow:true;" position="1 4 1" intensity="0.5" shadow-camera-automatic="#shadow-catcher"></a-light>
 		<a-light type="ambient" intensity="0.5"></a-light>
 		<a-camera position="0 0.5 0" wasd-controls="acceleration:10;"></a-camera>
 		
-		<a-torus-knot shadow radius-tubular="0.002" id="thing-to-clone" visible="false" radius="0.1"></a-torus-knot>
+		<a-gltf-model shadow src="#hand" id="thing-to-clone" visible="false"></a-gltf-model>
 		
 		<a-entity id="objects" position="0 0 -1" scale="0.5 0.5 0.5">
 			<a-entity position="0 1 0" brownian-path="count:40;object:#thing-to-clone;positionVariance:2 2 2;showLine:true;spaceVectorOffset:0.02,0.02,0.02,0.02,0.02,0.02;" shadow></a-entity>

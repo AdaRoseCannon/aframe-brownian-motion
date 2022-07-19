@@ -105,8 +105,28 @@ const brownianMotion = {
 	}
 };
 
-const brownianPath = {};
-Object.assign(brownianPath, brownianMotion);
+const brownianPath = Object.assign({
+	updateInstances() {
+		const data = this.data;
+		const instances = this.instances;
+		const instanceGroup = new THREE.Group();
+		if (this.el.getObject3D('instances')) {
+			this.el.removeObject3D('instances');
+		}
+		instances.splice(0);
+		if (data.object) {
+			data.object.object3D.traverse(function (object) {
+				if (object.geometry && object.material) {
+					const instance = new THREE.InstancedMesh(object.geometry, object.material, data.count);
+					instance.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+					instances.push(instance);
+					instanceGroup.add(instance);
+				}
+			});
+		}
+		this.el.setObject3D('instances', instanceGroup);
+	}
+}, brownianMotion);
 brownianPath.schema = Object.assign({
 	object: {
 		type: 'selector',
@@ -148,7 +168,13 @@ brownianPath.schema = Object.assign({
 	}
 }, brownianMotion.schema);
 
-brownianPath.update = function tick() {
+brownianPath.init = function tick() {
+	brownianMotion.init.call(this);
+	this.instances = [];
+	this.updateInstances = this.updateInstances.bind(this);
+};
+
+brownianPath.update = function update(oldData) {
 	const data = this.data;
 	brownianMotion.update.call(this);
 	this.spaceVectorOffset = [];
@@ -183,25 +209,12 @@ brownianPath.update = function tick() {
 		}
 	}
 
+	if (oldData.object) {
+		oldData.object.removeEventListener('object3dset', this.updateInstances);
+	}
 	if (data.object) {
-		this.instances = this.instances || [];
-		const instances = this.instances;
-		const instanceGroup = new THREE.Group();
-		if (this.el.getObject3D('instances')) {
-			this.el.removeObject3D('instances');
-		}
-		instances.splice(0);
-		if (data.object) {
-			data.object.object3D.traverse(function (object) {
-				if (object.geometry && object.material) {
-					const instance = new THREE.InstancedMesh(object.geometry, object.material, data.count);
-					instance.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
-					instances.push(instance);
-					instanceGroup.add(instance);
-				}
-			});
-		}
-		this.el.setObject3D('instances', instanceGroup);
+		data.object.addEventListener('object3dset', this.updateInstances);
+		this.updateInstances();
 	}
 };
 brownianPath.tick = function tick(time) {
