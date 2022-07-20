@@ -21,6 +21,10 @@ const schema = {
 	},
 	speed: {
 		default: 1
+	},
+	rotationFollowsAxis: {
+		oneOf: ['x', 'y', 'z', '-x', '-y', '-z',, 'none'],
+		default: 'none'
 	}
 };
 
@@ -31,10 +35,13 @@ documentation:
 	schema.positionVariance.description = `How much it should be moved by`;
 	schema.rotationVariance.description = `How much it should rotate by`;
 	schema.speed.description = `Speed multiplier`;
+	schema.rotationFollowsAxis.description = `If the object should follow the path along certain axis, set it here`;
 }());
 
 const v2 = new THREE.Vector2();
 const np = new THREE.Vector3();
+const temp = new THREE.Vector3();
+const temp2 = new THREE.Vector3();
 const nr = new THREE.Vector3();
 const nre = new THREE.Euler(0,0,0,'ZXY');
 const nrq = new THREE.Quaternion();
@@ -58,6 +65,13 @@ const brownianMotion = {
 		this.rotationOffset.x = (this.data.spaceVector[3] === '' || this.data.spaceVector[3] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[3]);
 		this.rotationOffset.y = (this.data.spaceVector[4] === '' || this.data.spaceVector[4] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[4]);
 		this.rotationOffset.z = (this.data.spaceVector[5] === '' || this.data.spaceVector[5] === undefined) ? Math.random()*2000 - 1000 : Number.parseFloat(this.data.spaceVector[5]);
+		
+		this.rotationFollowsAxis = this.data.rotationFollowsAxis;
+		this.rotationFollowsAxisMultiplier = 1;
+		if (this.rotationFollowsAxis[0] === '-') {
+			this.rotationFollowsAxis = this.rotationFollowsAxis.substr(1);
+			this.rotationFollowsAxisMultiplier = -1;
+		}
 	},
 	seed(number) {
 		seed(number);
@@ -73,34 +87,46 @@ const brownianMotion = {
 		}
 		return f;
 	},
-	updateNPNR(time, extraOffset, extraOffsetMultiplier) {
+	updateNPNRQ(time, extraOffset, extraOffsetMultiplier, oldTime) {
 		np.set(
 			this.fbm(this.positionOffset.x + extraOffset[0] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
 			this.fbm(this.positionOffset.y + extraOffset[1] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
 			this.fbm(this.positionOffset.z + extraOffset[2] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves)
 		);
 
-		nr.set(
-			this.fbm(this.rotationOffset.x + extraOffset[3] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
-			this.fbm(this.rotationOffset.y + extraOffset[4] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
-			this.fbm(this.rotationOffset.z + extraOffset[5] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves)
-		);
-
+		if (this.data.rotationFollowsAxis === 'none') {
+			nr.set(
+				this.fbm(this.rotationOffset.x + extraOffset[3] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.y + extraOffset[4] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves),
+				this.fbm(this.rotationOffset.z + extraOffset[5] * extraOffsetMultiplier, this.data.speed * time/1000, this.data.octaves)
+			);
+			nr.multiply(this.data.rotationVariance).multiplyScalar(1 / 0.75);
+			nre.setFromVector3(nr);
+			nrq.setFromEuler(nre);
+		} else {
+			temp2.set(
+				this.fbm(this.positionOffset.x + extraOffset[0] * extraOffsetMultiplier, this.data.speed * oldTime/1000, this.data.octaves),
+				this.fbm(this.positionOffset.y + extraOffset[1] * extraOffsetMultiplier, this.data.speed * oldTime/1000, this.data.octaves),
+				this.fbm(this.positionOffset.z + extraOffset[2] * extraOffsetMultiplier, this.data.speed * oldTime/1000, this.data.octaves)
+			);
+			temp2.subVectors(np, temp2).normalize();
+			temp.set(0,0,0);
+			temp[this.rotationFollowsAxis] = 1 * this.rotationFollowsAxisMultiplier;
+			nrq.setFromUnitVectors(temp, temp2);
+		}
 		np.multiply(this.data.positionVariance).multiplyScalar(1 / 0.75);
-		nr.multiply(this.data.rotationVariance).multiplyScalar(1 / 0.75);
 	},
 	tick(time) {
-		if (!this.startTime) this.startTime = time;
+		if (!this.startTime) {
+			this.startTime = time;
+			this.oldTime = -16;
+		}
+		
+		this.updateNPNRQ(time-this.startTime, emptyOffset, 0, this.oldTime);
+		this.oldTime = time-this.startTime;
+
 		const object3D = this.el.object3D;
-
-		this.updateNPNR(time-this.startTime, emptyOffset, 0);
-
-		// transform.localPosition = _initialPosition + np;
 		object3D.position.copy(this.initialPosition).add(np);
-		// var nrq = quaternion.EulerZXY(math.radians(nr));
-		// transform.localRotation = math.mul(nrq, _initialRotation);
-		nre.setFromVector3(nr);
-		nrq.setFromEuler(nre);
 		object3D.quaternion.copy(this.initialQuaternion).multiply(nrq);
 	}
 };
@@ -197,7 +223,7 @@ brownianPath.update = function update(oldData) {
 		}
 		for (let t=data.lineStart;t<data.lineEnd;t+=data.lineStep) {
 			for (let i=0;i<data.count;i++) {
-				this.updateNPNR(t, this.spaceVectorOffset, i);
+				this.updateNPNRQ(t, this.spaceVectorOffset, i);
 				points[i].push( np.clone() );
 			}
 		}
@@ -218,16 +244,18 @@ brownianPath.update = function update(oldData) {
 	}
 };
 brownianPath.tick = function tick(time) {
-	if (!this.startTime) this.startTime = time;
+	if (!this.startTime) {
+		this.startTime = time;
+		this.oldTime = -16;
+	}
 	for (let i=0;i<this.data.count;i++) {
-		this.updateNPNR(time-this.startTime, this.spaceVectorOffset, i);
-		nre.setFromVector3(nr);
-		nrq.setFromEuler(nre);
+		this.updateNPNRQ(time-this.startTime, this.spaceVectorOffset, i, this.oldTime);
 		_matrix.compose(np, nrq, _scale);
 		for (const ins of this.instances) {
 			ins.setMatrixAt( i, _matrix );
 		}
 	}
+	this.oldTime = time-this.startTime;
 	for (const ins of this.instances) {
 		ins.instanceMatrix.needsUpdate = true;
 	}

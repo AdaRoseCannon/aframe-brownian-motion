@@ -68,33 +68,35 @@ Example, this will draw 40 lines and clone the object 40 times to travel along t
 
 This component animates an object
 
-| Property         | Type   | Description                                                                                                                               | Default |
-| :--------------- | :----- | :---------------------------------------------------------------------------------------------------------------------------------------- | :------ |
-| spaceVector      | array  | Where in the phase space the starts, this should be an array of 6 values where empty spaces become a random number between -1000 and 1000 |         |
-| octaves          | number | How fine grained the motion is                                                                                                            | 2       |
-| positionVariance | vec3   | How much it should be moved by                                                                                                            | {}      |
-| rotationVariance | vec3   | How much it should rotate by                                                                                                              | {}      |
-| speed            | number | Speed multiplier                                                                                                                          | 1       |
+| Property            | Type   | Description                                                                                                                               | Default |
+| :------------------ | :----- | :---------------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| spaceVector         | array  | Where in the phase space the starts, this should be an array of 6 values where empty spaces become a random number between -1000 and 1000 |         |
+| octaves             | number | How fine grained the motion is                                                                                                            | 2       |
+| positionVariance    | vec3   | How much it should be moved by                                                                                                            | {}      |
+| rotationVariance    | vec3   | How much it should rotate by                                                                                                              | {}      |
+| speed               | number | Speed multiplier                                                                                                                          | 1       |
+| rotationFollowsAxis | string | If the object should follow the path along certain axis, set it here. One of x, y, z, -x, -y, -z, , none                                  | "none"  |
 
 ### brownian-path component
 
 This component animates an object
 
-| Property          | Type     | Description                                                                                                                               | Default   |
-| :---------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
-| object            | selector | Which object to instance with brownian-motion                                                                                             |           |
-| showLine          | boolean  | Whether to draw lines                                                                                                                     | false     |
-| lineColor1        | color    | Color of the first line                                                                                                                   | "orange"  |
-| lineColor2        | color    | Color of the last line                                                                                                                    | "hotpink" |
-| lineStart         | number   | Time stamp to start drawing the lines at                                                                                                  | 0         |
-| lineStep          | number   | Steps to take in drawing the path                                                                                                         | 20        |
-| lineEnd           | number   | Time stamp to stop drawing the lines at                                                                                                   | 10000     |
-| spaceVectorOffset | array    | Space vector offset for each instance/line                                                                                                |           |
-| count             | number   | Number of lines or instances                                                                                                              | 10        |
-| spaceVector       | array    | Where in the phase space the starts, this should be an array of 6 values where empty spaces become a random number between -1000 and 1000 |           |
-| octaves           | number   | How fine grained the motion is                                                                                                            | 2         |
-| positionVariance  | vec3     | How much it should be moved by                                                                                                            | {}        |
-| rotationVariance  | vec3     | How much it should rotate by                                                                                                              | {}        |
-| speed             | number   | Speed multiplier                                                                                                                          | 1         |
+| Property            | Type     | Description                                                                                                                               | Default   |
+| :------------------ | :------- | :---------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
+| object              | selector | Which object to instance with brownian-motion                                                                                             |           |
+| showLine            | boolean  | Whether to draw lines                                                                                                                     | false     |
+| lineColor1          | color    | Color of the first line                                                                                                                   | "orange"  |
+| lineColor2          | color    | Color of the last line                                                                                                                    | "hotpink" |
+| lineStart           | number   | Time stamp to start drawing the lines at                                                                                                  | 0         |
+| lineStep            | number   | Steps to take in drawing the path                                                                                                         | 20        |
+| lineEnd             | number   | Time stamp to stop drawing the lines at                                                                                                   | 10000     |
+| spaceVectorOffset   | array    | Space vector offset for each instance/line                                                                                                |           |
+| count               | number   | Number of lines or instances                                                                                                              | 10        |
+| spaceVector         | array    | Where in the phase space the starts, this should be an array of 6 values where empty spaces become a random number between -1000 and 1000 |           |
+| octaves             | number   | How fine grained the motion is                                                                                                            | 2         |
+| positionVariance    | vec3     | How much it should be moved by                                                                                                            | {}        |
+| rotationVariance    | vec3     | How much it should rotate by                                                                                                              | {}        |
+| speed               | number   | Speed multiplier                                                                                                                          | 1         |
+| rotationFollowsAxis | string   | If the object should follow the path along certain axis, set it here. One of x, y, z, -x, -y, -z, , none                                  | "none"    |
 
 <!--DOCS_END-->
