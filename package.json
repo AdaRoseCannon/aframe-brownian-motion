@@ -1,6 +1,6 @@
 {
   "name": "aframe-brownian-motion",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "THREE brownian-motion in AFrame",
   "repository": "https://github.com/AdaRoseCannon/aframe-brownian-motion",
   "scripts": {
